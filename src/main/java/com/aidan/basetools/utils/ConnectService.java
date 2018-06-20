@@ -1,5 +1,7 @@
 package com.aidan.basetools.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -20,6 +23,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -28,62 +32,44 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by Aidan on 2018/1/28.
  */
 
 public class ConnectService {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
+    public static Context applicationContext;
     public interface HttpRequestDelegate {
         void didGetResponse(String url, String response);
     }
 
-    private static OkHttpClient getUnsafeOkHttpClient() {
-        try {
-            // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
-                    }
-            };
-
-            // Install the all-trusting trust manager
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            // Create an ssl socket factory with our all-trusting manager
-            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-
-            OkHttpClient okHttpClient = builder.build();
-            return okHttpClient;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public static void saveSession(Response response){
+        if(applicationContext == null){
+            return;
         }
+        Headers headers =response.headers();
+        List<String> cookies = headers.values("Set-Cookie");
+        if(cookies.size() == 0)return;
+        String session = cookies.get(0);
+        String sessionId = session.substring(0,session.indexOf(";"));
+        SharedPreferences share = applicationContext.getSharedPreferences("Session",MODE_PRIVATE);
+        SharedPreferences.Editor edit = share.edit();//编辑文件
+        edit.putString("sessionId",sessionId);
+        edit.commit();
     }
 
-    public static void sendPatchRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
+    public static Request.Builder getSessionRequestBuilder(){
+        SharedPreferences share = applicationContext.getSharedPreferences("Session",MODE_PRIVATE);
+        String sessionId= share.getString("sessionId","null");
+        return new Request.Builder().addHeader("cookie",sessionId);
+    }
 
-        OkHttpClient client = getUnsafeOkHttpClient();
+
+
+    public static void sendPatchRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
+        OkHttpClient client = new OkHttpClient();
         FormBody.Builder b = new FormBody.Builder();
         Iterator<String> keys = params.keys();
         while (keys.hasNext()) {
@@ -116,6 +102,7 @@ public class ConnectService {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 int statusCode = response.code();
+                saveSession(response);
                 if ((statusCode != 200 && statusCode != 201 && statusCode != 304)) {
                     LogHelper.log("statusCode: " + statusCode);
                     if (delegate != null) delegate.didGetResponse(url, null);
@@ -129,13 +116,11 @@ public class ConnectService {
     }
 
     public static void sendGetRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
-        OkHttpClient client = getUnsafeOkHttpClient();
+        OkHttpClient client = new OkHttpClient();
         String urlWithParams = getUrlWithParam(url, params);
         urlWithParams = urlWithParams.substring(0, urlWithParams.length() - 1);
         LogHelper.log("SEND GET REQUEST: " + urlWithParams);
-
-        Request.Builder builder = new Request.Builder()
-                .url(urlWithParams).get();
+        Request.Builder builder = getSessionRequestBuilder().url(urlWithParams).get();
         for (String key : headers.keySet()) {
             builder.addHeader(key, headers.get(key));
         }
@@ -149,6 +134,7 @@ public class ConnectService {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                saveSession(response);
                 int statusCode = response.code();
                 if ((statusCode != 200 && statusCode != 201 && statusCode != 304)) {
                     LogHelper.log("statusCode: " + statusCode);
@@ -188,10 +174,9 @@ public class ConnectService {
         return urlWithParams.toString();
     }
 
-    //HttpUrl.parse(url).newBuilder().port(Constants.PORT).build()
     public static void sendPostRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
 
-        OkHttpClient client = getUnsafeOkHttpClient();
+        OkHttpClient client = new OkHttpClient();
         FormBody.Builder b = new FormBody.Builder();
         Iterator<String> keys = params.keys();
         while (keys.hasNext()) {
@@ -204,10 +189,7 @@ public class ConnectService {
         RequestBody body = b.build();
 
         LogHelper.log("JSONObject: " + params.toString());
-        Request.Builder builder = new Request.Builder()
-                .url(url)
-                .post(body);
-
+        Request.Builder builder = getSessionRequestBuilder().url(url).post(body);
         for (String key : headers.keySet()) {
             builder.addHeader(key, headers.get(key));
         }
@@ -222,6 +204,7 @@ public class ConnectService {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                saveSession(response);
                 int statusCode = response.code();
                 if ((statusCode != 200 && statusCode != 201 && statusCode != 304)) {
                     LogHelper.log("statusCode: " + statusCode);

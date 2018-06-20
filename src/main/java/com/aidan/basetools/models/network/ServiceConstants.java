@@ -15,6 +15,7 @@ import de.greenrobot.event.EventBus;
 
 public class ServiceConstants {
     public static final String JSON_KEY_ERROR = "error";
+    public static final String JSON_KEY_CODE = "code";
     public static final String JSON_KEY_RESULT = "result";
     public static final String JSON_KEY_DATA = "data";
     public static final String API_CHECK_NEW_VERSION = "repositories/getNew";
@@ -187,7 +188,7 @@ public class ServiceConstants {
         }
 
         try {
-            callback.onResult(true, jsonObj.getJSONObject(JSON_KEY_DATA), new ErrorHandler());
+            callback.onResult(jsonObj.getInt(JSON_KEY_CODE)==200, jsonObj.getJSONObject(JSON_KEY_DATA), new ErrorHandler(jsonObj));
         } catch (JSONException e) {
             callback.onResult(false, null, new ErrorHandler(ErrorHandler.CODE_UNKNOWN, "", ""));
             e.printStackTrace();
@@ -209,18 +210,7 @@ public class ServiceConstants {
         }
 
         try {
-            JSONObject responseResult = jsonObj.getJSONObject(JSON_KEY_RESULT);
-            Boolean isSuccess = responseResult.getBoolean(JSON_KEY_IS_SUCCESS);
-
-            if (!isSuccess) {
-                ErrorHandler errorHandler = new ErrorHandler(responseResult);
-                callback.onResult(false, null, errorHandler);
-                //check Login Token
-                checkLoginToken(errorHandler);
-            } else {
-                JSONArray result = responseResult.getJSONArray(JSON_KEY_RESULT);
-                callback.onResult(true, result, new ErrorHandler());
-            }
+            callback.onResult(jsonObj.getInt(JSON_KEY_CODE)==200, jsonObj.getJSONArray(JSON_KEY_DATA), new ErrorHandler(jsonObj));
         } catch (JSONException e) {
             callback.onResult(false, null, new ErrorHandler(ErrorHandler.CODE_UNKNOWN, "", ""));
             e.printStackTrace();

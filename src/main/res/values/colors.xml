@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="bg_gray_color">#ebebeb</color>
+    <color name="black">#000000</color>
+    <color name="white_color">#FFFFFF</color>
+    <color name="light_gray_color">#cccccc</color>
+    <color name="warm_grey_two">#959595</color>
+    <color name="gray_color">#999999</color>
+    <color name="dark_gray_color">#273f52</color>
+</resources>
