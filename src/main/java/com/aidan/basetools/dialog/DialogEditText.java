@@ -46,7 +46,6 @@ public class DialogEditText extends Dialog {
     @Override
     protected void onCreate(Bundle s) {
         super.onCreate(s);
-        setCancelable(false);
         setContentView(R.layout.dialog_edit_text);
         findView();
         setViewClick();

@@ -188,7 +188,7 @@ public class ServiceConstants {
         }
 
         try {
-            callback.onResult(jsonObj.getInt(JSON_KEY_CODE)==200, jsonObj.getJSONObject(JSON_KEY_DATA), new ErrorHandler(jsonObj));
+            callback.onResult(jsonObj.getBoolean(JSON_KEY_RESULT), jsonObj.getJSONObject(JSON_KEY_DATA), new ErrorHandler(jsonObj));
         } catch (JSONException e) {
             callback.onResult(false, null, new ErrorHandler(ErrorHandler.CODE_UNKNOWN, "", ""));
             e.printStackTrace();
@@ -210,7 +210,7 @@ public class ServiceConstants {
         }
 
         try {
-            callback.onResult(jsonObj.getInt(JSON_KEY_CODE)==200, jsonObj.getJSONArray(JSON_KEY_DATA), new ErrorHandler(jsonObj));
+            callback.onResult(jsonObj.getBoolean(JSON_KEY_RESULT), jsonObj.getJSONArray(JSON_KEY_DATA), new ErrorHandler(jsonObj));
         } catch (JSONException e) {
             callback.onResult(false, null, new ErrorHandler(ErrorHandler.CODE_UNKNOWN, "", ""));
             e.printStackTrace();
