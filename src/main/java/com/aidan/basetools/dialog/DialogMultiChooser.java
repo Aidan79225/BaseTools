@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -54,6 +55,7 @@ public class DialogMultiChooser<T> extends Dialog {
     }
 
     private void setViewValue(){
+        dataListView.setAdapter(adapter);
         ViewGroup.LayoutParams params = rootView.getLayoutParams();
         params.width = DeviceUtils.getInstance(getContext()).SCREEN_WIDTH * 8 / 10;
         rootView.setLayoutParams(params);
@@ -86,10 +88,19 @@ public class DialogMultiChooser<T> extends Dialog {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null || !(convertView instanceof TextView)) {
                 convertView = new TextView(parent.getContext());
+                TextView textView = ((TextView)convertView);
+                textView.setTextColor(parent.getContext().getResources().getColor(R.color.black));
+                textView.setTextSize(16);
+                textView.setGravity(Gravity.CENTER);
+                convertView.setPadding(0,DeviceUtils.getInstance(parent.getContext()).dpToPixel(10),0,DeviceUtils.getInstance(parent.getContext()).dpToPixel(10));
             }
             ((TextView)convertView).setText(data.get(position).getName());
+
             if(adapterClick != null){
-                convertView.setOnClickListener( v -> adapterClick.onClick(data.get(position).getData()));
+                convertView.setOnClickListener( v -> {
+                    adapterClick.onClick(data.get(position).getData());
+                    dismiss();
+                });
             }
             return convertView;
         }

@@ -8,11 +8,13 @@
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textStyle="bold"
         android:text="提示"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textColor="@color/black"/>
     <ListView
         android:id="@+id/dataListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="200dp"/>
 </LinearLayout>
