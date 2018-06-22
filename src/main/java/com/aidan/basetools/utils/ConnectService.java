@@ -101,16 +101,8 @@ public class ConnectService {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                int statusCode = response.code();
                 saveSession(response);
-                if ((statusCode != 200 && statusCode != 201 && statusCode != 304)) {
-                    LogHelper.log("statusCode: " + statusCode);
-                    if (delegate != null) delegate.didGetResponse(url, response);
-                } else {
-                    String responseString = response.body().string();
-                    LogHelper.log("Received: " + responseString);
-                    if (delegate != null) delegate.didGetResponse(url, response);
-                }
+                if (delegate != null) delegate.didGetResponse(url, response);
             }
         });
     }
@@ -197,15 +189,7 @@ public class ConnectService {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 saveSession(response);
-                int statusCode = response.code();
-                if ((statusCode != 200 && statusCode != 201 && statusCode != 304)) {
-                    LogHelper.log("statusCode: " + statusCode);
-                    if (delegate != null) delegate.didGetResponse(url, response);
-                } else {
-                    String responseString = response.body().string();
-                    LogHelper.log("Received: " + responseString);
-                    if (delegate != null) delegate.didGetResponse(url, response);
-                }
+                if (delegate != null) delegate.didGetResponse(url, response);
             }
         });
     }
