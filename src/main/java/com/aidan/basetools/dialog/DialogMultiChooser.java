@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DialogMultiChooser<T> extends Dialog {
-    public interface NameObject<T>{
+    public interface NameObject<T> {
         String getName();
+
         T getData();
     }
-    public interface AdapterClick<T>{
+
+    public interface AdapterClick<T> {
         void onClick(T data);
     }
 
@@ -30,9 +32,10 @@ public class DialogMultiChooser<T> extends Dialog {
     Adapter<T> adapter;
     TextView titleTextView;
     ListView dataListView;
+
     public DialogMultiChooser(@NonNull Context context, List<NameObject<T>> data, AdapterClick<T> adapterClick) {
         super(context);
-        this.adapter = new Adapter<>(data,adapterClick);
+        this.adapter = new Adapter<>(data, adapterClick);
     }
 
     @Override
@@ -50,11 +53,11 @@ public class DialogMultiChooser<T> extends Dialog {
         rootView = findViewById(R.id.rootView);
     }
 
-    private void setViewClick(){
+    private void setViewClick() {
 
     }
 
-    private void setViewValue(){
+    private void setViewValue() {
         dataListView.setAdapter(adapter);
         ViewGroup.LayoutParams params = rootView.getLayoutParams();
         params.width = DeviceUtils.getInstance(getContext()).SCREEN_WIDTH * 8 / 10;
@@ -62,13 +65,15 @@ public class DialogMultiChooser<T> extends Dialog {
     }
 
 
-    private class Adapter<T> extends BaseAdapter{
+    private class Adapter<T> extends BaseAdapter {
         List<NameObject<T>> data = new ArrayList<>();
         AdapterClick<T> adapterClick;
-        public Adapter(List<NameObject<T>> data, AdapterClick<T> adapterClick){
+
+        public Adapter(List<NameObject<T>> data, AdapterClick<T> adapterClick) {
             this.data.addAll(data);
             this.adapterClick = adapterClick;
         }
+
         @Override
         public int getCount() {
             return data.size();
@@ -88,20 +93,20 @@ public class DialogMultiChooser<T> extends Dialog {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null || !(convertView instanceof TextView)) {
                 convertView = new TextView(parent.getContext());
-                TextView textView = ((TextView)convertView);
+                TextView textView = ((TextView) convertView);
                 textView.setTextColor(parent.getContext().getResources().getColor(R.color.black));
                 textView.setTextSize(16);
                 textView.setGravity(Gravity.CENTER);
-                convertView.setPadding(0,DeviceUtils.getInstance(parent.getContext()).dpToPixel(10),0,DeviceUtils.getInstance(parent.getContext()).dpToPixel(10));
+                convertView.setPadding(0, DeviceUtils.getInstance(parent.getContext()).dpToPixel(10), 0, DeviceUtils.getInstance(parent.getContext()).dpToPixel(10));
             }
-            ((TextView)convertView).setText(data.get(position).getName());
-
-            if(adapterClick != null){
-                convertView.setOnClickListener( v -> {
+            ((TextView) convertView).setText(data.get(position).getName());
+            convertView.setOnClickListener(v -> {
+                if (adapterClick != null) {
                     adapterClick.onClick(data.get(position).getData());
                     dismiss();
-                });
-            }
+                }
+            });
+
             return convertView;
         }
     }
