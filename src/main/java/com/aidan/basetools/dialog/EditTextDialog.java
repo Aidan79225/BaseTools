@@ -2,7 +2,6 @@ package com.aidan.basetools.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 import com.aidan.basetools.R;
 import com.aidan.basetools.utils.DeviceUtils;
 
-public class DialogEditText extends Dialog {
+public class EditTextDialog extends Dialog {
     private ViewGroup rootView;
     private TextView cancelTextView;
     private TextView okTextView;
@@ -39,7 +38,7 @@ public class DialogEditText extends Dialog {
         void onClick(String msg);
     }
 
-    public DialogEditText(@NonNull Context context) {
+    public EditTextDialog(@NonNull Context context) {
         super(context);
     }
 
@@ -90,37 +89,37 @@ public class DialogEditText extends Dialog {
         rootView.setLayoutParams(params);
     }
 
-    public DialogEditText setOkClickListener(OkClickListener okClickListener) {
+    public EditTextDialog setOkClickListener(OkClickListener okClickListener) {
         this.okClickListener = okClickListener;
         return this;
     }
 
-    public DialogEditText setCancelClickListener(View.OnClickListener cancelClickListener) {
+    public EditTextDialog setCancelClickListener(View.OnClickListener cancelClickListener) {
         this.cancelClickListener = cancelClickListener;
         return this;
     }
 
-    public DialogEditText setCancelCallback(Runnable cancelCallback) {
+    public EditTextDialog setCancelCallback(Runnable cancelCallback) {
         this.cancelCallback = cancelCallback;
         return this;
     }
 
-    public DialogEditText setTitleText(String titleText) {
+    public EditTextDialog setTitleText(String titleText) {
         this.titleText = titleText;
         return this;
     }
 
-    public DialogEditText setOkText(String okText) {
+    public EditTextDialog setOkText(String okText) {
         this.okText = okText;
         return this;
     }
 
-    public DialogEditText setCancelText(String cancelText) {
+    public EditTextDialog setCancelText(String cancelText) {
         this.cancelText = cancelText;
         return this;
     }
 
-    public DialogEditText setRemindText(String remindText) {
+    public EditTextDialog setRemindText(String remindText) {
         this.remindText = remindText;
         return this;
     }

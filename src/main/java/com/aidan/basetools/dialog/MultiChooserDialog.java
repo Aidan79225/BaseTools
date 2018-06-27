@@ -17,7 +17,7 @@ import com.aidan.basetools.utils.DeviceUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DialogMultiChooser<T> extends Dialog {
+public class MultiChooserDialog<T> extends Dialog {
     public interface NameObject<T> {
         String getName();
 
@@ -33,7 +33,7 @@ public class DialogMultiChooser<T> extends Dialog {
     TextView titleTextView;
     ListView dataListView;
 
-    public DialogMultiChooser(@NonNull Context context, List<NameObject<T>> data, AdapterClick<T> adapterClick) {
+    public MultiChooserDialog(@NonNull Context context, List<NameObject<T>> data, AdapterClick<T> adapterClick) {
         super(context);
         this.adapter = new Adapter<>(data, adapterClick);
     }
