@@ -193,4 +193,32 @@ public class ConnectService {
             }
         });
     }
+
+    public static void sendPostJSONRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
+
+        OkHttpClient client = new OkHttpClient();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body =  RequestBody.create(JSON, params.toString());
+
+        LogHelper.log("JSONObject: " + params.toString());
+        Request.Builder builder = getSessionRequestBuilder().url(url).post(body);
+        for (String key : headers.keySet()) {
+            builder.addHeader(key, headers.get(key));
+        }
+        LogHelper.log("SEND POST REQUEST: " + url);
+        Request request = builder.build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                LogHelper.log("POST REQUEST EXCEPTION: " + e.toString());
+                if (delegate != null) delegate.didGetResponse(url, null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                saveSession(response);
+                if (delegate != null) delegate.didGetResponse(url, response);
+            }
+        });
+    }
 }
