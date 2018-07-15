@@ -41,6 +41,7 @@ public class ConfirmDialog extends Dialog {
     private float messageTextSize = 20f;
     private String okText = "";
     private String cancelText = "";
+    private int cancelTextColorId = 0;
 
     public ConfirmDialog(Context context) {
         super(context);
@@ -119,6 +120,10 @@ public class ConfirmDialog extends Dialog {
         this.cancelText = cancelText;
     }
 
+    public void setCancelTextColorId(int cancelTextColorId) {
+        this.cancelTextColorId = cancelTextColorId;
+    }
+
     private void findView() {
         messageTextView = findViewById(R.id.messageTextView);
         cancelTextView = findViewById(R.id.cancelTextView);
@@ -158,6 +163,9 @@ public class ConfirmDialog extends Dialog {
         if (cancelText.length() > 0) cancelTextView.setText(cancelText);
         for (Pair<View, LinearLayout.LayoutParams> pair : contentViewList) {
             contentLinearLayout.addView(pair.first, pair.second);
+        }
+        if(cancelTextColorId != 0){
+            cancelTextView.setTextColor(getContext().getResources().getColor(cancelTextColorId));
         }
     }
 }
