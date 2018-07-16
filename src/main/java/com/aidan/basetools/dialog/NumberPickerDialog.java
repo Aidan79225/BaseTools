@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.Window;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -18,10 +19,11 @@ public class NumberPickerDialog extends Dialog {
     private TextView titleTextView,okTextView,cancelTextView;
     private NumberPicker numberPicker;
 
+    private String title = "請選擇數量";
+
     public interface ConfirmClick{
         void onClick(int number);
     }
-
     public NumberPickerDialog(@NonNull Context context, int maxValue, int minValue, ConfirmClick confirmClick) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -44,7 +46,7 @@ public class NumberPickerDialog extends Dialog {
     }
 
     private void setView(int maxValue, int minValue, ConfirmClick confirmClick){
-        titleTextView.setText("請選擇數量");
+        titleTextView.setText(title);
         numberPicker.setMaxValue(maxValue);
         numberPicker.setMinValue(minValue);
         setNumberPickerDividerColor(numberPicker, getContext().getResources().getColor(R.color.light_gray_color));
@@ -71,6 +73,11 @@ public class NumberPickerDialog extends Dialog {
             } catch (Exception e) {
             }
         }
+    }
+
+    public NumberPickerDialog setTitle(String title) {
+        this.title = title;
+        return this;
     }
 
 
