@@ -39,8 +39,8 @@ public class ConfirmDialog extends Dialog {
     private int titleGravity = Gravity.START;
     private int messageGravity = Gravity.START;
     private float messageTextSize = 20f;
-    private String okText = "";
-    private String cancelText = "";
+    private String okText = "確認";
+    private String cancelText = "取消";
     private int cancelTextColorId = 0;
 
     public ConfirmDialog(Context context) {
