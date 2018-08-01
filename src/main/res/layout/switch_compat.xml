@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/switchContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+   >
+
+    <ImageView
+        android:id="@+id/switchBackOffImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_form_switch_off" />
+
+    <ImageView
+        android:id="@+id/switchBackOnImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:alpha="0.0"
+        android:src="@drawable/btn_form_switch_on" />
+
+    <ImageView
+        android:id="@+id/switchThumbImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/btn_form_switch_round" />
+</RelativeLayout>

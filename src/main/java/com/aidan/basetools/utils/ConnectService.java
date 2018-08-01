@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
@@ -66,7 +67,39 @@ public class ConnectService {
         return new Request.Builder().addHeader("cookie",sessionId);
     }
 
+    public static void sendPostFileRequest(String url, String filename, HashMap<String, String> headers, HttpRequestDelegate delegate){
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), new File(filename));
+        MultipartBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", filename, requestBody)
+                .build();
 
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder builder = getSessionRequestBuilder().url(url).post(body);
+        for (String key : headers.keySet()) {
+            builder.addHeader(key, headers.get(key));
+        }
+        LogHelper.log("SEND POST REQUEST: " + url);
+        Request request = builder.build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                LogHelper.log("POST REQUEST EXCEPTION: " + e.toString());
+                if (delegate != null) delegate.didGetResponse(url, null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                saveSession(response);
+                if (delegate != null) delegate.didGetResponse(url, response);
+            }
+        });
+
+
+
+
+
+    }
 
     public static void sendPatchRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
         OkHttpClient client = new OkHttpClient();
