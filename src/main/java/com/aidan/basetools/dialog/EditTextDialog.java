@@ -3,7 +3,7 @@ package com.aidan.basetools.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.aidan.basetools.R;
 import com.aidan.basetools.utils.DeviceUtils;
+
+import androidx.annotation.NonNull;
 
 public class EditTextDialog extends Dialog {
     private ViewGroup rootView;

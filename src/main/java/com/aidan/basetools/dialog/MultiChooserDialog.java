@@ -3,7 +3,6 @@ package com.aidan.basetools.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,8 @@ import com.aidan.basetools.utils.DeviceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class MultiChooserDialog<T> extends Dialog {
     public interface NameObject<T> {

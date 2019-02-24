@@ -2,7 +2,6 @@ package com.aidan.basetools.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +20,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.Window;
 import android.widget.NumberPicker;
@@ -14,6 +13,8 @@ import android.widget.TextView;
 import com.aidan.basetools.R;
 
 import java.lang.reflect.Field;
+
+import androidx.annotation.NonNull;
 
 public class NumberPickerDialog extends Dialog {
     private TextView titleTextView,okTextView,cancelTextView;
