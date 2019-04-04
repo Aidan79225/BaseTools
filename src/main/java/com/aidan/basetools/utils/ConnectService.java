@@ -2,6 +2,7 @@ package com.aidan.basetools.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -94,11 +95,46 @@ public class ConnectService {
                 if (delegate != null) delegate.didGetResponse(url, response);
             }
         });
+    }
 
+    public static void sendPostFileRequest(String url, String filename, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate){
+        FormBody.Builder b = new FormBody.Builder();
+        Iterator<String> keys = params.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            try {
+                b.add(key, params.getString(key));
+            } catch (Exception e) {
+            }
+        }
 
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), new File(filename));
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if (!TextUtils.isEmpty(filename)) {
+            multipartBodyBuilder.addFormDataPart("file", filename, requestBody);
+        }
+        MultipartBody body = multipartBodyBuilder.addPart(b.build()).build();
 
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder builder = getSessionRequestBuilder().url(url).post(body);
+        for (String key : headers.keySet()) {
+            builder.addHeader(key, headers.get(key));
+        }
+        LogHelper.log("SEND POST REQUEST: " + url);
+        Request request = builder.build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                LogHelper.log("POST REQUEST EXCEPTION: " + e.toString());
+                if (delegate != null) delegate.didGetResponse(url, null);
+            }
 
-
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                saveSession(response);
+                if (delegate != null) delegate.didGetResponse(url, response);
+            }
+        });
     }
 
     public static void sendPatchRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
