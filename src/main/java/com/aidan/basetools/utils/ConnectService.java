@@ -7,8 +7,12 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +26,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -33,6 +38,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -97,35 +104,18 @@ public class ConnectService {
         });
     }
 
-    public static void sendPostFileRequest(String url, String filename, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate){
-        FormBody.Builder b = new FormBody.Builder();
-        Iterator<String> keys = params.keys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            try {
-                b.add(key, params.getString(key));
-            } catch (Exception e) {
-            }
-        }
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), new File(filename));
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if (!TextUtils.isEmpty(filename)) {
-            multipartBodyBuilder.addFormDataPart("file", filename, requestBody);
-        }
-        MultipartBody body = multipartBodyBuilder.addPart(b.build()).build();
-
+    public static void sendPostFileRequest(String url,RequestBody body, HashMap<String, String> headers, HttpRequestDelegate delegate){
         OkHttpClient client = new OkHttpClient();
         Request.Builder builder = getSessionRequestBuilder().url(url).post(body);
         for (String key : headers.keySet()) {
             builder.addHeader(key, headers.get(key));
         }
-        LogHelper.log("SEND POST REQUEST: " + url);
+        LogHelper.log("SEND POST FILE REQUEST: " + url);
         Request request = builder.build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                LogHelper.log("POST REQUEST EXCEPTION: " + e.toString());
+                LogHelper.log("POST FILE REQUEST EXCEPTION: " + e.toString());
                 if (delegate != null) delegate.didGetResponse(url, null);
             }
 
@@ -135,6 +125,16 @@ public class ConnectService {
                 if (delegate != null) delegate.didGetResponse(url, response);
             }
         });
+    }
+
+    public static byte[] getByte(InputStream is) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
     }
 
     public static void sendPatchRequest(String url, HashMap<String, String> headers, JSONObject params, HttpRequestDelegate delegate) {
